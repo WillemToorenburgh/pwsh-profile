@@ -1,29 +1,34 @@
-#This is the $PROFILE when run from Windows Terminal
-
-# Get Perforce to set up env vars
-# p4 set
-
-New-Alias -Name 'll' -Value 'ls'
-New-Alias -Name 'which' -Value 'Get-Command'
-New-Alias -name 'dig' -Value 'Resolve-DNSName'
-
-# Chocolatey profile
-$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-if (Test-Path($ChocolateyProfile)) {
-    Import-Module "$ChocolateyProfile"
+If (Get-Command p4.exe -ErrorAction SilentlyContinue) {
+    # Get Perforce to set up env vars
+    # p4 set
 }
 
-Import-Module Az.Tools.Predictor
-Import-Module Terminal-Icons
-Import-Module posh-git
-Import-Module CompletionPredictor
+Function ll { Get-ChildItem -Force @args }
 
+New-Alias -Name 'which' -Value 'Get-Command'
+
+If ($IsWindows) {
+    New-Alias -name 'dig' -Value 'Resolve-DNSName'
+    New-Alias -Name 'ls' -Value 'Get-ChildItem'
 #34de4b3d-13a8-4540-b76d-b9e8d3851756 PowerToys CommandNotFound module
 
 Import-Module "C:\Program Files\PowerToys\WinUI3Apps\..\WinGetCommandNotFound.psd1"
 #34de4b3d-13a8-4540-b76d-b9e8d3851756
 
-If (Get-Command az) {
+    # Chocolatey profile
+    $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+    If (Test-Path($ChocolateyProfile)) {
+        Import-Module "$ChocolateyProfile"
+    }
+}
+
+Import-Module Terminal-Icons
+Import-Module posh-git
+Import-Module CompletionPredictor
+
+If (Get-Command az -ErrorAction SilentlyContinue) {
+    Import-Module Az.Tools.Predictor
+    $env:POSH_AZURE_ENABLED = "True"
     Register-ArgumentCompleter -Native -CommandName az -ScriptBlock {
         param($commandName, $wordToComplete, $cursorPosition)
         $completion_file = New-TemporaryFile
@@ -45,6 +50,10 @@ If (Get-Command az) {
 
 # Disabling as it seems to be causing issues with the VSCode Powershell extension integrated terminal
 # Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
+# TODO: add Windows value
+If ($IsLinux) {
+    $env:POSH_THEMES_PATH = "/run/current-system/sw/share/oh-my-posh/themes"
+}
 
 oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\kushal.omp.json" | Invoke-Expression
 $env:POSH_GIT_ENABLED = $true
