@@ -1,19 +1,14 @@
-If (Get-Command p4.exe -ErrorAction SilentlyContinue) {
-    # Get Perforce to set up env vars
-    # p4 set
-}
-
 Function ll { Get-ChildItem -Force @args }
 
 New-Alias -Name 'which' -Value 'Get-Command'
 
 If ($IsWindows) {
     New-Alias -name 'dig' -Value 'Resolve-DNSName'
-    New-Alias -Name 'ls' -Value 'Get-ChildItem'
-#34de4b3d-13a8-4540-b76d-b9e8d3851756 PowerToys CommandNotFound module
 
-Import-Module "C:\Program Files\PowerToys\WinUI3Apps\..\WinGetCommandNotFound.psd1"
-#34de4b3d-13a8-4540-b76d-b9e8d3851756
+#f45873b3-b655-43a6-b217-97c00aa0db58 PowerToys CommandNotFound module
+
+Import-Module -Name Microsoft.WinGet.CommandNotFound
+#f45873b3-b655-43a6-b217-97c00aa0db58
 
     # Chocolatey profile
     $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
@@ -48,13 +43,17 @@ If (Get-Command az -ErrorAction SilentlyContinue) {
     }
 }
 
+# Function Show-PoshThemes {
+#     Get-ChildItem $env:POSH_THEMES_PATH | ForEach-Object {
+#         If (-not $_.NameString -Match "`.omp`.(json|yaml)$") { Continue }
+#         Write-Host "This is $($_.NameString)!"
+#         pwsh -NoProfile -Interactive -NoExit -CommandWithArgs 'oh-my-posh init pwsh --config $args | Invoke-Expression' $_
+#     }
+# }
+
+
 # Disabling as it seems to be causing issues with the VSCode Powershell extension integrated terminal
 # Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
-# TODO: add Windows value
-If ($IsLinux) {
-    $env:POSH_THEMES_PATH = "/run/current-system/sw/share/oh-my-posh/themes"
-}
-
 oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\kushal.omp.json" | Invoke-Expression
 $env:POSH_GIT_ENABLED = $true
 
